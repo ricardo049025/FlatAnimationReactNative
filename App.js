@@ -2,96 +2,21 @@ import { StatusBar } from 'expo-status-bar';
 import { Animated, Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 import DATA from './consts/data';
 import * as React from 'react';
-import Colors from './consts/color';
+import Indicator from './components/Indicator';
+import Backdrop from './components/Backdrop';
+import Square from './components/Square';
 
 const {width, height} = Dimensions.get('screen');
 
-const Indicator = ({scrollX}) => {
-  return (
-    <View style={{position: 'absolute', bottom: 100, flexDirection: 'row'}}>
-      {DATA.map((item,index) => {
-        const inputRange = [(index - 1) * width, index * width, (index+1) * width];
-        const scale = scrollX.interpolate({
-          inputRange,
-          outputRange: [0.8, 1.4, 0.8],
-          extrapolate: 'clamp'
-        });
-        const opacity = scrollX.interpolate({
-          inputRange,
-          outputRange: [0.4, 1, 0.4],
-          extrapolate: 'clamp'
-        });
-        return <Animated.View key={`indicator-${index}`} style={{
-          height: 10, 
-          width: 10, 
-          borderRadius: 5, 
-          backgroundColor: '#333', 
-          margin: 10,
-          backgroundColor: 'white',
-          opacity,
-          transform: [{scale}]
-        }} />
-        })}
-    </View>
-  )
-}
-
-const Backdrop = ({scrollX}) =>{
-
-  const backgroundColor =  scrollX.interpolate({
-    inputRange: Colors.map((item,index) => index * width),
-    outputRange: Colors.map((item,index) => item)
-  });
-
-  return(
-    <Animated.View
-    style={[ StyleSheet.absoluteFillObject,{backgroundColor}]}
-    >
-
-    </Animated.View>
-  )  
-}
-
-const Square = ({scrollX}) =>{
-  const YOLO = Animated.modulo(Animated.divide(Animated.modulo(scrollX,width),new Animated.Value(width)),1);
-  const rotate = YOLO.interpolate({
-    inputRange: [0, .5, 1],
-    outputRange: ['35deg','0deg','35deg']
-  })
-  const translateX = YOLO.interpolate({
-    inputRange: [0, .5, 1],
-    outputRange: [0,-height,0]
-  })
-  return(
-    <Animated.View style={{
-      width: height, 
-      height: height, 
-      backgroundColor: '#fff', 
-      borderRadius: 86, 
-      position: 'absolute', 
-      top: -height * 0.6,
-      left: -height * 0.3,
-      transform: [
-        {
-          rotate
-        },
-        {
-          translateX
-        }
-        ]}}>
-
-    </Animated.View>
-  )
-}
-
 export default function App() {
+  
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   return (
     <View style={styles.container}>
       <StatusBar style="hidden" />
-      <Backdrop scrollX={scrollX}/>
-      <Square scrollX={scrollX} />
+      <Backdrop scrollX={scrollX} width={width}/>
+      <Square scrollX={scrollX} width={width} height={height}/>
       <Animated.FlatList
       contentContainerStyle={{paddingBottom:100}} 
       data={DATA}
@@ -119,7 +44,7 @@ export default function App() {
           )
       }}
       />
-      <Indicator scrollX={scrollX}/>
+      <Indicator scrollX={scrollX} quantity={DATA.length} width={width} />
     </View>
   );
 }
