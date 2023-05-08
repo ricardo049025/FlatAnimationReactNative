@@ -1,59 +1,151 @@
-import { StatusBar } from 'expo-status-bar';
-import { Animated, Dimensions, Image, StyleSheet, Text, View } from 'react-native';
-import DATA from './consts/data';
-import * as React from 'react';
-import Indicator from './components/Indicator';
-import Backdrop from './components/Backdrop';
-import Square from './components/Square';
+import {Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import HomeScreen from './screens/HomeScreen';
+import SearchScreen from './screens/SearchScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import SettingScreen from './screens/SettingScreen';
+import ChatScreen from './screens/ChatScreen';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {Ionicons} from "@expo/vector-icons";
+import { useEffect, useRef } from 'react';
+import * as Animatable from 'react-native-animatable';
+
 
 const {width, height} = Dimensions.get('screen');
+const Tab = createBottomTabNavigator();
 
-export default function App() {
-  
-  const scrollX = React.useRef(new Animated.Value(0)).current;
+const animate1 = { 0: { scale: .5, translateY: 7 }, .92: { translateY: -34 }, 1: { scale: 1.2, translateY: -24 } }
+const animate2 = { 0: { scale: 1.2, translateY: -24 }, 1: { scale: 1, translateY: 7 } }
+
+const circle1 = { 0: { scale: 0 }, 0.3: { scale: .9 }, 0.5: { scale: .2 }, 0.8: { scale: .7 }, 1: { scale: 1 } }
+const circle2 = { 0: { scale: 1 }, 1: { scale: 0 } }
+
+const TabButton = (props) =>{
+
+  const { onPress, accessibilityState, name, label } = props;
+  const focused = accessibilityState.selected;
+  const viewRef = useRef(null);
+  const circleRef = useRef(null);
+  const textRef = useRef(null);
+
+  useEffect(() => {
+    if (focused) {
+      viewRef.current.animate(animate1);
+      circleRef.current.animate(circle1);
+      textRef.current.transitionTo({ scale: 1 });
+    } else {
+      viewRef.current.animate(animate2);
+      circleRef.current.animate(circle2);
+      textRef.current.transitionTo({ scale: 0 });
+    }
+  }, [focused])
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="hidden" />
-      <Backdrop scrollX={scrollX} width={width}/>
-      <Square scrollX={scrollX} width={width} height={height}/>
-      <Animated.FlatList
-      contentContainerStyle={{paddingBottom:100}} 
-      data={DATA}
-      keyExtractor={item => item.key}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      scrollEventThrottle={32}
-      onScroll={Animated.event(
-        [{nativeEvent: {contentOffset: {x: scrollX}}}],
-        {useNativeDriver: false}
-        )}
-      renderItem={({item}) => {
-        return (
-          <View style={{width, alignItems: 'center', padding: 20}} >
-            <View style={{flex: .7, justifyContent: 'center'}}>
-              <Image 
-              source={{uri: item.image}} 
-              style={{width: width/2, height: height/2, resizeMode: 'contain'}}/>
-            </View>
-            <View style={{flex: .3}}>
-              <Text style={{fontWeight: '800', fontSize: 24, marginBottom: 10, }}>{item.title}</Text>
-              <Text style={{fontWeight: '300'}}>{item.description}</Text>
-            </View>
-          </View>
-          )
-      }}
-      />
-      <Indicator scrollX={scrollX} quantity={DATA.length} width={width} />
-    </View>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={1}
+      style={styles.container}>
+      <Animatable.View
+        ref={viewRef}
+        duration={1000}
+        style={styles.container}>
+        <View style={styles.btn}>
+          <Animatable.View
+            ref={circleRef}
+            style={styles.circle} />
+          <Ionicons name={name} color={focused ? "white" : 'red'} size={20} />
+        </View>
+        <Animatable.Text
+          ref={textRef}
+          style={styles.text}>
+          {label}
+        </Animatable.Text>
+      </Animatable.View>
+    </TouchableOpacity>
+  )
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator initialRouteName='home' screenOptions={{
+        headerShown: false,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          height: 80,
+          position: 'absolute',
+          bottom: 40,
+          right: 16,
+          left: 16,
+          borderRadius: 16,
+          backgroundColor: '#ffffff',
+          //Android
+          elevation: 2,
+          ...styles.shadow
+        }
+      }}>
+        <Tab.Screen name='home' component={HomeScreen} options={{
+          tabBarButton: (props) => <TabButton {...props} name='home' label="home" />
+        }}/>
+        <Tab.Screen name='search' component={SearchScreen} options={{
+          tabBarButton: (props) => <TabButton {...props} name='search' label="Search" />
+        }}/>
+        <Tab.Screen name='setting' component={SettingScreen} options={{
+          tabBarButton: (props) => <TabButton {...props} name='cog-outline' label="Settings" />
+        }}/> 
+        <Tab.Screen name='chat' component={ChatScreen}options={{
+          tabBarButton: (props) => <TabButton {...props} name='chatbox-ellipses-outline' label="Settings" />
+        }}/>
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+  },
+  shadow:{
+    //for IOS
+    shadowColor: 'black',
+    shadowOffset: {width: 0, height: 10},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    //for Android
+    elevation: 5
+  },
+  tabBar: {
+    height: 70,
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    left: 16,
+    borderRadius: 16,
+  },
+  btn: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 4,
+    borderColor: 'white',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
+
+  },
+  circle: {
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'red',
+    borderRadius: 25,
   },
-});
+  text: {
+    fontSize: 12,
+    fontWeight: 400,
+    textAlign: 'center',
+    color: 'red',
+  }
+})

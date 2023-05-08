@@ -23,7 +23,7 @@ const Indicator = ({scrollX, quantity, width}) =>{
 const styles = StyleSheet.create({
     container:{
         position: 'absolute',
-        bottom: 100,
+        bottom: 150,
         flexDirection: 'row'
     },
     pointIndicator: {
