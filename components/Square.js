@@ -9,7 +9,8 @@ const Square = ({scrollX, width, height}) => {
         <Animated.View style={[
             styles.shapeStyle, 
             {width: height, height: height, top: -height * 0.6, left: -height * 0.3},
-            {transform: [{rotate}, {translateX}]}]} />
+            {transform: [{rotate}, {translateX}]}
+        ]} />
     )
 }
 

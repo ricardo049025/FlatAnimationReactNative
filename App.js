@@ -1,4 +1,4 @@
-import {Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import HomeScreen from './screens/HomeScreen';
 import SearchScreen from './screens/SearchScreen';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,8 +9,6 @@ import {Ionicons} from "@expo/vector-icons";
 import { useEffect, useRef } from 'react';
 import * as Animatable from 'react-native-animatable';
 
-
-const {width, height} = Dimensions.get('screen');
 const Tab = createBottomTabNavigator();
 
 const animate1 = { 0: { scale: .5, translateY: 7 }, .92: { translateY: -34 }, 1: { scale: 1.2, translateY: -24 } }
@@ -73,13 +71,11 @@ export default function App() {
         tabBarStyle: {
           height: 80,
           position: 'absolute',
-          bottom: 40,
+          bottom: 25,
           right: 16,
           left: 16,
           borderRadius: 16,
           backgroundColor: '#ffffff',
-          //Android
-          elevation: 2,
           ...styles.shadow
         }
       }}>
@@ -108,11 +104,11 @@ const styles = StyleSheet.create({
     
   },
   shadow:{
-    //for IOS
-    shadowColor: 'black',
-    shadowOffset: {width: 0, height: 10},
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
+   //IOS shadow
+   shadowColor: 'black',
+   shadowOffset: {width: 0, height: 2},
+   shadowRadius: 6,
+   shadowOpacity: 0.5,
     //for Android
     elevation: 5
   },

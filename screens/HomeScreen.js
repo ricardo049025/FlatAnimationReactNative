@@ -31,7 +31,7 @@ const HomeScreen = ({route}) =>{
             <View style={{flex: .7, justifyContent: 'center'}}>
               <Image 
               source={{uri: item.image}} 
-              style={{width: width/2, height: height/2, resizeMode: 'contain'}}/>
+              style={{width: width/2, height: height/3, resizeMode: 'contain'}}/>
             </View>
             <View style={{flex: .3}}>
               <Text style={{fontWeight: '800', fontSize: 24, marginBottom: 10, }}>{item.title}</Text>
